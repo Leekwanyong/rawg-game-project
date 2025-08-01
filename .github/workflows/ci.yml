@@ -1,24 +1,22 @@
-name: npm run lint
+name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - dev
+    branches: [main, develop]
   pull_request:
-    branches:
-      - dev
+    branches: [main, develop]
 
 jobs:
-  eslint:
+  ci-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
+          cache: 'npm'
+
       - run: npm ci
-      - uses: sibiraj-s/action-eslint@v4
-        with:
-          eslint-args: '--ignore-path=.gitignore --quiet'
-          extensions: 'js,jsx,ts,tsx'
-          annotations: true
+
+      - run: npm run ci
