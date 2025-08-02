@@ -1,7 +1,11 @@
 const API_KEY = import.meta.env.VITE_RAWG_API_KEY;
 const BASE_GAMES_URL = `https://api.rawg.io/api/games`;
 
-interface GameListQuery {
+if (!API_KEY) {
+  throw new Error('VITE_RAWG_API_KEY 설정되지 않았습니다.');
+}
+
+export interface GameListQuery {
   page?: string;
   page_size?: string;
   search?: string;
@@ -12,12 +16,18 @@ interface GameListQuery {
 
 const ENDPOINT = {
   GETGAMELIST: (query?: GameListQuery) => {
-    const queryString = new URLSearchParams(
-      query as Record<string, string>,
-    ).toString();
-    return `${BASE_GAMES_URL}?key=${API_KEY}&${queryString}`;
+    const params = new URLSearchParams();
+    if (query) {
+      Object.entries(query).forEach(([key, value]) => {
+        if (value !== undefined) {
+          params.append(key, value);
+        }
+      });
+    }
+    params.append('key', API_KEY);
+    return `${BASE_GAMES_URL}?${params.toString()}`;
   },
-  GETGANESCRENNSHOT: (gamePk: string) =>
+  GETGAMESCREENSHOT: (gamePk: string) =>
     `${BASE_GAMES_URL}/${gamePk}/screenshots?${API_KEY}`,
 };
 
